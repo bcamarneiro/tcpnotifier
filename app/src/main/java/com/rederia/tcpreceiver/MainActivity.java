@@ -94,13 +94,17 @@ public class MainActivity extends Activity {
         connectToServer();
     }
 
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
     public void connectToServer(){
         Log.d(TAG, "Create MyClientTask");
         MyClientTask myClientTask = new MyClientTask(SERVER_IP, Integer.parseInt(SERVER_PORT));
         Log.d(TAG, "Execute MyClientTask");
         myClientTask.execute();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -195,18 +199,20 @@ public class MainActivity extends Activity {
         protected void onProgressUpdate(String... values) {
             Log.d(TAG, values[0]);
             if(values[0] == "&&notconnected"){
-                textState.setText("Not connected");
+                textState.setText("Não ligado");
             } else if(values[0] == "&&connecting"){
-                textState.setText("Connecting");
+                textState.setText("A ligar...");
             } else if(values[0] == "&&connected"){
-                textState.setText("Connected");
+                textState.setText("Ligado");
             } else {
                 adapter.addAll(values);
-                Notification notification = new Notification(R.drawable.ic_launcher, "Notification Received", System.currentTimeMillis());
+                Notification notification = new Notification(R.drawable.ic_launcher, "Sistema de Alarme", System.currentTimeMillis());
                 PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, getIntent(), 0);
-                notification.setLatestEventInfo(getApplicationContext(), "Notification Received", values[0], contentIntent);
+                getIntent().setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                notification.setLatestEventInfo(getApplicationContext(), "Sistema de Alarme", values[0], contentIntent);
                 notification.defaults |= Notification.DEFAULT_SOUND;
                 notification.defaults |= Notification.DEFAULT_VIBRATE;
+                notification.flags |= Notification.FLAG_AUTO_CANCEL;
                 manager.notify(0, notification);
             }
 

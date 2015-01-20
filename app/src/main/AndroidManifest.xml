@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rederia.tcpreceiver" >
+    package="com.rederia.beehelp" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="com.rederia.beehelp.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" >
@@ -23,15 +23,15 @@
         </activity>
 
         <service
-            android:name=".TcpSocketService"
+            android:name="com.rederia.beehelp.TcpSocketService"
             android:enabled="true"
             android:exported="true"
             android:process=":tcp_socket_service_process" >
         </service>
 
-        <activity android:name="com.rederia.tcpreceiver.SettingsActivity"
+        <activity android:name="com.rederia.beehelp.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.rederia.tcpreceiver.MainActivity">
+            android:parentActivityName="com.rederia.beehelp.MainActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.rederia.tcpreceiver.MainActivity" />
         </activity>

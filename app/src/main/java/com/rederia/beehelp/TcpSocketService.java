@@ -1,4 +1,4 @@
-package com.rederia.tcpreceiver;
+package com.rederia.beehelp;
 
 import android.app.Service;
 import android.content.Intent;

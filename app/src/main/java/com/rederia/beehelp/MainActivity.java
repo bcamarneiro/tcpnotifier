@@ -1,4 +1,4 @@
-package com.rederia.tcpreceiver;
+package com.rederia.beehelp;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -7,18 +7,18 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     public static final String MyPREFERENCES = "MyPrefs" ;
     public static final String IpAddress = "ipAddress";
     public static final String Port = "port";
+    public MediaPlayer mediaPlayer;
 
     SharedPreferences sharedpreferences;
     String SERVER_IP = "127.0.0.1";
@@ -48,13 +49,10 @@ public class MainActivity extends Activity {
 
     ListView listview;
     TextView textState;
-    float historicX = Float.NaN, historicY = Float.NaN;
-    static final int DELTA = 50;
-    enum Direction {LEFT, RIGHT;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        mediaPlayer = MediaPlayer.create(getApplicationContext(),RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -85,9 +83,10 @@ public class MainActivity extends Activity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = listItems.get(position);
                 listItems.remove(position);
                 adapter.notifyDataSetChanged();
+                mediaPlayer.stop();
+                mediaPlayer.prepareAsync();
             }
         });
 
@@ -131,6 +130,7 @@ public class MainActivity extends Activity {
 
     public class MyClientTask extends AsyncTask<Void, String, Void> {
         public static final String TAG = "MyClientTask";
+
 
         String dstAddress;
         int dstPort;
@@ -198,19 +198,24 @@ public class MainActivity extends Activity {
         @Override
         protected void onProgressUpdate(String... values) {
             Log.d(TAG, values[0]);
-            if(values[0] == "&&notconnected"){
+            if(values[0].equals("&&notconnected")){
                 textState.setText("Não ligado");
-            } else if(values[0] == "&&connecting"){
+            } else if(values[0].equals("&&connecting")){
                 textState.setText("A ligar...");
-            } else if(values[0] == "&&connected"){
+            } else if(values[0].equals("&&connected")){
                 textState.setText("Ligado");
             } else {
                 adapter.addAll(values);
+
+                if(!mediaPlayer.isPlaying()){
+                    mediaPlayer.start();
+                }
+
                 Notification notification = new Notification(R.drawable.ic_launcher, "Sistema de Alarme", System.currentTimeMillis());
                 PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, getIntent(), 0);
                 getIntent().setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 notification.setLatestEventInfo(getApplicationContext(), "Sistema de Alarme", values[0], contentIntent);
-                notification.defaults |= Notification.DEFAULT_SOUND;
+                notification.defaults = Notification.DEFAULT_SOUND;
                 notification.defaults |= Notification.DEFAULT_VIBRATE;
                 notification.flags |= Notification.FLAG_AUTO_CANCEL;
                 manager.notify(0, notification);

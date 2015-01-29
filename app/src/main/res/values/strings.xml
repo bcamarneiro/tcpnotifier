@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="action_connect">Connect</string>
     <string name="title_activity_settings">Settings Activity</string>
+    <string name="version">v2.15.1</string>
 
 </resources>
